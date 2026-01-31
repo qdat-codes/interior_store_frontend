@@ -1,4 +1,4 @@
-import { Image } from "../../shared/components/Image";
+import { Image } from "@/shared/components/Image";
 
 const PinterestMasonry = ({ images }: { images: string[] }) => {
   return (

@@ -1,4 +1,4 @@
-import PinterestMasonry from "../masonry_css_grid";
+import PinterestMasonry from "@/shared/components/Masonry";
 import { SectionHeader } from "../section_header";
 
 const SuggestSection = () => {
@@ -28,11 +28,13 @@ const SuggestSection = () => {
   ];
   return (
     <div>
-      <div className="lg:pt-6 lg:px-[165px]">
-        <SectionHeader
-          title="gợi ý cho căn phòng của bạn"
-          subtitle="các tác phẩm của chúng tôi"
-        />
+      <div className="mt-6 lg:mx-[165px] md:mx-16 ">
+        <div className="md:text-start text-center">
+          <SectionHeader
+            title="gợi ý cho căn phòng của bạn"
+            subtitle="các tác phẩm của chúng tôi"
+          />
+        </div>
       </div>
       <div>
         <PinterestMasonry images={images} />

@@ -28,7 +28,7 @@ const CollectionProduct = () => {
     },
   ];
   return (
-    <div className="bg-[#E1BA90] lg:pb-[50px] overflow-x-hidden">
+    <div className="bg-[#E1BA90] lg:pb-[50px] md:pb-[72px] overflow-x-hidden">
       <Carousel images={images.map((image) => image.image)} />
     </div>
   );

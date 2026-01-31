@@ -25,7 +25,9 @@ export const Heading = ({
   const Tag = `h${level}` as React.ElementType;
 
   return (
-    <Tag className={`${sizes[level]} ${color} ${weight} ${className}`}>
+    <Tag
+      className={`md:text-[36px] text-[20px] ${sizes[level]} ${color} ${weight} ${className}`}
+    >
       {text}
     </Tag>
   );

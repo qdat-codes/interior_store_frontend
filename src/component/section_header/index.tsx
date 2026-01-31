@@ -1,5 +1,5 @@
 import { Heading, Text } from "../../shared/components/Text";
-import { LineDivider } from "../divider";
+import { LineDivider } from "../../shared/components/Divider";
 
 export const SectionHeader = ({
   title,
@@ -14,14 +14,16 @@ export const SectionHeader = ({
     <div className="relative">
       <Text
         text={subtitle?.toLocaleUpperCase()}
-        size="lg:text-[16px]"
+        size="md:text-[16px] text-[12px]"
         color="text-black"
         weight="font-normal"
-        className="lg:mb-2"
+        className="mb-2"
       />
 
-      <Heading text={title?.toLocaleUpperCase()} />
-      <LineDivider width={width} thickness={4} />
+      <Heading text={title?.toLocaleUpperCase()} weight="font-bold" level={1} />
+      <div className="md:block flex justify-center items-center md:mb-6 mb-4">
+        <LineDivider width={width} thickness={4} />
+      </div>
     </div>
   );
 };

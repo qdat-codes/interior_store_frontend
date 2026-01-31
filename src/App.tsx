@@ -1,9 +1,10 @@
-import HomePage from "./pages/home_page";
+// import HomePage from "./pages/home_page";
 
 function App() {
   return (
     <div className="w-full max-h-screen">
-      <HomePage />
+      <header>
+      </header>
     </div>
   );
 }

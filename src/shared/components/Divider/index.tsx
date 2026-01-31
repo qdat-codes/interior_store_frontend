@@ -12,7 +12,7 @@ export const LineDivider = ({
   color?: string;
 }) => {
   return (
-    <div style={{ width: width }}>
+    <div style={{ width: width, height: "4px" }}>
       <Divider
         className={`${className} rounded-xs`}
         style={{

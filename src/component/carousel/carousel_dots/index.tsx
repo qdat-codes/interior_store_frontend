@@ -3,14 +3,16 @@ export const CarouselDots = ({
   currentIndex,
   onDotClick,
   isAnimating,
+  className,
 }: {
   slides: string[];
   currentIndex: number;
   onDotClick: (index: number) => void;
   isAnimating: boolean;
+  className?: string;
 }) => {
   return (
-    <div className="flex justify-center items-center gap-2 mt-8">
+    <div className={`flex justify-center items-center gap-2 mt-8 ${className}`}>
       {slides.map((_, index) => (
         <button
           children={undefined}

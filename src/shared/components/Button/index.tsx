@@ -7,24 +7,26 @@ export const Button = ({
   disabled = false,
   icon: Icon = null,
   iconPosition = "left",
-  iconSize = 18,
+  iconSize,
+  type = "button",
 }: {
   children: React.ReactNode;
   className?: string;
   onclick?: () => void;
   variant?:
-    | "primary"
-    | "secondary"
-    | "tertiary"
-    | "outline"
-    | "danger"
-    | "ghost"
-    | "custom";
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "outline"
+  | "danger"
+  | "ghost"
+  | "custom";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   icon?: React.ComponentType<{ size: number }> | null;
   iconPosition?: "left" | "right";
   iconSize?: number;
+  type?: "button" | "submit" | "reset";
 }) => {
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700",
@@ -44,17 +46,16 @@ export const Button = ({
 
   return (
     <button
+      type={type}
       onClick={onclick}
       disabled={disabled}
-      className={`cursor-pointer transition-transform hover:scale-105 active:scale-95 duration-300 ${
-        variants[variant]
-      } ${size_btn[size]} ${
-        disabled ? "opacity-50 cursor-not-allowed" : ""
-      } flex items-center gap-2 justify-center rounded ${className}`}
+      className={`cursor-pointer transition-transform hover:scale-105 active:scale-95 duration-300 ${variants[variant]
+        } ${size_btn[size]} ${disabled ? "opacity-50 cursor-not-allowed" : ""
+        } flex items-center gap-2 justify-center rounded ${className}`}
     >
-      {Icon && iconPosition === "left" && Icon && <Icon size={iconSize} />}
+      {Icon && iconPosition === "left" && Icon && <Icon size={iconSize || 18} />}
       {children}
-      {Icon && iconPosition === "right" && Icon && <Icon size={iconSize} />}
+      {Icon && iconPosition === "right" && Icon && <Icon size={iconSize || 18} />}
     </button>
   );
 };

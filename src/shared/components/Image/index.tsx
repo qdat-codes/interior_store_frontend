@@ -1,12 +1,13 @@
 export const Image = ({
   src,
   alt = "image",
-  width = "w-full",
-  height = "h-auto",
+  width = "",
+  height = "",
   objectFit = "object-cover",
   className = "",
   rouneded = false,
   onError = null,
+  onclick = null,
 }: {
   src: string;
   alt?: string;
@@ -21,15 +22,17 @@ export const Image = ({
   className?: string;
   rouneded?: boolean;
   onError?: (() => void) | null;
+  onclick?: (() => void) | null;
 }) => {
   return (
     <img
       src={src}
       alt={alt}
-      className={`${width} ${height} ${objectFit} ${
+      className={` ${width} ${height} ${objectFit} ${
         rouneded ? "rounded" : ""
       } ${className}`}
       onError={onError ? onError : undefined}
+      onClick={onclick ? onclick : undefined}
     />
   );
 };
@@ -39,11 +42,13 @@ export const Avatar = ({
   alt = "avatar",
   size = "md",
   className = "",
+  onclick = null,
 }: {
   src: string;
   alt?: string;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  onclick?: (() => void) | null;
 }) => {
   const sizes_avatar = {
     sm: "w-8 h-8",
@@ -56,7 +61,8 @@ export const Avatar = ({
     <img
       src={src}
       alt={alt}
-      className={`w-${size} h-${sizes_avatar[size]} object-cover rounded-full ${className}`}
+      className={`w-${size} h-${sizes_avatar[size]} cursor-pointer object-cover rounded-full ${className}`}
+      onClick={onclick ? onclick : undefined}
     />
   );
 };

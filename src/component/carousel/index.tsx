@@ -55,13 +55,15 @@ export const Carousel = ({
 
   return (
     <>
-      <div className="lg:py-6 lg:flex lg:justify-between lg:items-center lg:px-[165px]">
-        <SectionHeader
-          title="hàng mới về"
-          subtitle="bộ sưu tập"
-          width="165px"
-        />
-        <div className="lg:flex lg:items-center lg:space-x-6">
+      <div className="py-6 flex justify-between items-center lg:mx-[165px] md:mx-16">
+        <div className="md:text-start text-center w-full">
+          <SectionHeader
+            title="hàng mới về"
+            subtitle="bộ sưu tập"
+            width="165px"
+          />
+        </div>
+        <div className="lg:flex lg:items-center lg:space-x-6 hidden">
           <CarouselNavButton
             icon={<LeftOutlined />}
             onClick={prevSlide}
@@ -75,38 +77,38 @@ export const Carousel = ({
         </div>
       </div>
 
-      <div className="lg:px-0 relative lg:flex lg:items-center lg:justify-between lg:gap-6 -ml-[100px]">
+      <div className="px-0 relative flex items-center justify-between gap-6 -ml-[100px] mb-[35px]">
         {/* PREV SLIDE */}
         <div
           onClick={prevSlide}
-          className="relative lg:w-[580px] lg:h-[342px] cursor-pointer opacity-60 hover:opacity-80 transition-opacity  hover:scale-105 active:scale-95 duration-300"
+          className="relative lg:w-[580px] md:h-[342px] md:w-[150px] w-[150px] h-[200px] cursor-pointer opacity-60 hover:opacity-80 transition-opacity  hover:scale-105 active:scale-95 duration-300"
         >
           <img
             src={images[getPrevIndex()]}
             alt="Previous"
-            className="absolute lg:w-full lg:h-full left-0 object-cover rounded-lg shadow-lg"
+            className="absolute w-full h-full left-0 object-cover rounded-lg shadow-lg"
           />
         </div>
 
         {/* CURRENT SLIDE */}
-        <div className="relative lg:w-[828px] lg:h-[488px]  z-10 cursor-pointer opacity-60 hover:opacity-80 transition-opacity  hover:scale-105 active:scale-95 duration-300">
+        <div className="relative lg:w-[828px] md:h-[488px] w-[253px] h-[300px] z-10 cursor-pointer opacity-60 hover:opacity-80 transition-opacity hover:scale-105 active:scale-95 duration-300 md:w-[616px]">
           <img
             key={currentIndex}
             src={images[currentIndex]}
             alt={`Slide ${currentIndex + 1}`}
-            className="lg:w-full h-full object-cover rounded-lg shadow-2xl "
+            className="w-full h-full object-cover rounded-lg shadow-2xl "
           />
         </div>
 
         {/* NEXT SLIDE */}
         <div
           onClick={nextSlide}
-          className="relative w-[580px] h-[342px] cursor-pointer opacity-60 hover:opacity-80 transition-opacity -mr-[100px]  hover:scale-105 active:scale-95 duration-300"
+          className="relative lg:w-[580px] md:h-[342px] md:w-[150px] w-[150px] h-[200px] cursor-pointer opacity-60 hover:opacity-80 transition-opacity -mr-[100px]  hover:scale-105 active:scale-95 duration-300"
         >
           <Image
             src={images[getNextIndex()]}
             alt="Next"
-            className="absolute right-0 lg:w-full lg:h-full object-cover rounded-lg shadow-lg"
+            className="absolute right-0 w-full h-full object-cover rounded-lg shadow-lg"
           />
         </div>
       </div>
@@ -116,6 +118,7 @@ export const Carousel = ({
         currentIndex={currentIndex}
         onDotClick={gotoSlide}
         isAnimating={isAnimating}
+        className="lg:flex hidden"
       />
     </>
   );

@@ -1,0 +1,13 @@
+# Chuẩn hóa line ending: lưu LF trong repo, Git tự convert theo OS khi checkout
+* text=auto eol=lf
+
+# Binary files không convert
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

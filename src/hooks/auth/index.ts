@@ -1,18 +1,21 @@
 import { authService } from "@/api/services/auth/auth.service";
 import { queryClient } from "@/react-query";
-import { clearError, logout, setError, setToken, setUser } from "@/store/slices/auth";
+import { clearError, logout, setError, setToken } from "@/store/slices/auth";
+import { setUser } from "@/store/slices/user";
 import type { ILoginRequest, ILoginResponse, ILogoutRequest, IRefreshTokenRequest, ISignUpRequest, ISignUpResponse } from "@/types/auth";
 import { getErrorMessage } from "@/utils/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
+
 
 export const useLogin = () => {
     const dispatch = useDispatch();
     return useMutation({
         mutationFn: (data: ILoginRequest) => authService.signIn(data),
         onSuccess: (data: ILoginResponse) => {
-            dispatch(setUser(data.user));
-            dispatch(setToken({ accessToken: data.token }));
+            const { user, accessToken } = data;
+            dispatch(setUser([user]));
+            dispatch(setToken({ accessToken: accessToken }));
             dispatch(clearError());
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
@@ -27,8 +30,8 @@ export const useSignUp = () => {
     return useMutation({
         mutationFn: (data: ISignUpRequest) => authService.signUp(data),
         onSuccess: (data: ISignUpResponse) => {
-            dispatch(setUser(data.user));
-            dispatch(setToken({ accessToken: data.token }));
+            dispatch(setUser([data.user]));
+            dispatch(setToken({ accessToken: data.accessToken }));
             dispatch(clearError());
             queryClient.invalidateQueries({ queryKey: ['user'] });
         },
@@ -65,4 +68,5 @@ export const useRefreshToken = () => {
         },
     });
 }
+
 

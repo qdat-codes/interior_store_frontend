@@ -1,5 +1,4 @@
 import { setAccessToken, setRefreshToken, clearAuthTokens } from '@/utils/storage';
-import type { IUser } from '@/types/user';
 import type { ILoginRequest, ILoginResponse, ILogoutRequest, IRefreshTokenRequest, ISignUpRequest, ISignUpResponse } from '@/types/auth';
 import { apiClient, type SuccessResponse } from '@/api';
 /**
@@ -10,33 +9,33 @@ export const authService = {
      * Sign in user
      */
     signIn: async (data: ILoginRequest): Promise<ILoginResponse> => {
-        const response = await apiClient.post<SuccessResponse<ILoginResponse>>('/auth/login', data);
-        const { token, refreshToken } = response.data.data;
-
-        // Store tokens
-        setAccessToken(token);
-        if (refreshToken) {
-            setRefreshToken(refreshToken);
-        }
-
-        return response.data.data;
+        const response = await apiClient.post<SuccessResponse<ILoginResponse> | ILoginResponse>('/auth/login', data);
+        const body = response.data;
+        const payload: ILoginResponse =
+            body && typeof body === 'object' && 'data' in body
+                ? (body as SuccessResponse<ILoginResponse>).data
+                : (body as ILoginResponse);
+        const { accessToken } = payload;
+        setAccessToken(accessToken);
+        return payload;
     },
 
     /**
      * Sign up new user
+     * Swagger: 200 trả về trực tiếp { user, accessToken } (không bọc trong data)
      */
     signUp: async (data: ISignUpRequest): Promise<ISignUpResponse> => {
-        const response = await apiClient.post<SuccessResponse<ISignUpResponse>>('/auth/register', data);
+        const response = await apiClient.post<SuccessResponse<ISignUpResponse> | ISignUpResponse>('/auth/register', data);
+        const body = response.data;
+        const payload: ISignUpResponse =
+            body && typeof body === 'object' && 'data' in body
+                ? (body as SuccessResponse<ISignUpResponse>).data
+                : (body as ISignUpResponse);
+        const { accessToken } = payload;
 
-        const { token, refreshToken } = response.data.data;
-
-        // Store tokens
-        setAccessToken(token);
-        if (refreshToken) {
-            setRefreshToken(refreshToken);
-        }
-
-        return response.data.data;
+        setAccessToken(accessToken);
+        if (payload.refreshToken) setRefreshToken(payload.refreshToken);
+        return payload;
     },
 
     /**
@@ -57,25 +56,15 @@ export const authService = {
      * Refresh access token
      */
     refreshToken: async (refresh_token: IRefreshTokenRequest): Promise<string> => {
-        const response = await apiClient.post<SuccessResponse<{ token: string }>>('/auth/refresh', { refresh_token });
-        const { token } = response.data.data;
+        const response = await apiClient.post<SuccessResponse<{ token: string }> | { token: string }>('/auth/refresh', { refresh_token });
+        const body = response.data;
+        const payload =
+            body && typeof body === 'object' && 'data' in body
+                ? (body as SuccessResponse<{ token: string }>).data
+                : (body as { token: string });
+        const { token } = payload;
         setAccessToken(token);
         return token;
-    },
-
-    /**
-     * Get current authenticated user
-     */
-    getCurrentUser: async (): Promise<IUser> => {
-        const response = await apiClient.get<SuccessResponse<IUser>>('/auth/me');
-        return response.data.data;
-    },
-
-    /**
-     * Verify email
-     */
-    verifyEmail: async (token: string): Promise<void> => {
-        await apiClient.post('/auth/verify-email', { token });
     },
 
     /**

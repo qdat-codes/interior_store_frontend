@@ -4,13 +4,15 @@ import type React from "react";
 const BadgeCount = ({
   count,
   children,
+  onClick,
 }: {
   count: number;
   children: React.ReactNode;
+  onClick?: () => void;
 }) => {
   return (
     <>
-      <Badge count={count} overflowCount={99}>
+      <Badge count={count} overflowCount={99} onClick={onClick}>
         {children}
       </Badge>
     </>

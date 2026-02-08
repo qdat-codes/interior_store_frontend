@@ -12,7 +12,7 @@ const apiClient: AxiosInstance = axios.create({
         'Content-Type': 'application/json',
         Accept: 'application/json',
     },
-    withCredentials: false,
+    withCredentials: true, // Allow sending cookies with requests
 });
 
 /**
@@ -56,11 +56,7 @@ apiClient.interceptors.response.use(
             });
         }
 
-        // If API returns wrapped response, extract data
-        if (response.data && typeof response.data === 'object' && 'data' in response.data) {
-            return response.data;
-        }
-
+        // Luôn trả full Axios response để type (AxiosResponse<T>) khớp runtime, services dùng response.data / response.data.data
         return response;
     },
     // error handler

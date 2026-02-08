@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { IAuthState } from './type'
-import type { IUser } from '@/types/user'
 
 const initialState: IAuthState = {
     user: null,
@@ -12,14 +11,10 @@ const initialState: IAuthState = {
     error: null
 }
 
-export const authSlice = createSlice({
+export const authSlice = createSlice({  
     name: 'auth',
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<IUser | null>) => {
-            state.user = action.payload;
-            state.isAuthenticated = !!action.payload; // !! convert to boolean
-        },
         setToken: (state, action: PayloadAction<{ accessToken: string }>) => {
             state.accessToken = action.payload.accessToken;
         },
@@ -44,6 +39,6 @@ export const authSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setUser, setToken, logout, setIsLoading, setError, clearError } = authSlice.actions
+export const { setToken, logout, setIsLoading, setError, clearError } = authSlice.actions
 
 export default authSlice.reducer

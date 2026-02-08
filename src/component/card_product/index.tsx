@@ -56,7 +56,7 @@ export const CardProduct = ({
 
           <div
             className="
-            hidden lg:flex
+            hidden lg:flex flex-row flex-nowrap
             absolute inset-0
             bg-black/40
             items-center justify-center gap-3
@@ -68,21 +68,18 @@ export const CardProduct = ({
             cursor-pointer
     "
           >
-            <button className="cursor-pointer border-2 border-[#D39864] bg-white px-3 py-1.5 rounded-md flex justify-between items-center gap-1 transition-all ease-in-out duration-300 hover:scale-105 active:scale-95">
+            <button className="cursor-pointer border-2 border-[#D39864] bg-white px-2 py-1.5 rounded-md flex flex-row items-center gap-1 whitespace-nowrap transition-all ease-in-out duration-300 hover:scale-105 active:scale-95">
               <Icon
                 component={ShoppingCartOutlined}
                 size="sm"
                 color="text-[#D39864]"
-              ></Icon>
-              <p className="font-medium text-[#D39864] text-[12px]  ">
-                Thêm vào giỏ
-              </p>
+              />
+              <span className="font-medium text-[#D39864] text-[12px]">Thêm vào giỏ</span>
             </button>
-
             <Link
               to="/product/$id"
               params={{ id: id?.toString() || "" }}
-              className="text-[12px] font-medium cursor-pointer bg-[#D39864] text-white px-4 py-[7px] rounded-md transition-all ease-in-out duration-300 hover:scale-105 active:scale-95"
+              className="text-[12px] font-medium cursor-pointer bg-[#D39864] text-white px-2 py-[7px] rounded-md whitespace-nowrap transition-all ease-in-out duration-300 hover:scale-105 active:scale-95"
             >
               Xem chi tiết
             </Link>
@@ -132,7 +129,7 @@ export const CardProduct = ({
           className="
             flex lg:hidden
             items-center justify-between gap-3
-            mt-2
+            mt-2 
     "
         >
           <button className="border-2 border-[#D39864] bg-white px-3 py-1.5 rounded-md flex justify-between items-center gap-1">

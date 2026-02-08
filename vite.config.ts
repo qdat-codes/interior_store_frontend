@@ -29,6 +29,12 @@ export default defineConfig({
       usePolling: false,
       ignored: ["**/node_modules/**", "**/.git/**"],
     },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3009",
+        changeOrigin: true,
+      },
+    },
   },
   optimizeDeps: {
     exclude: [],

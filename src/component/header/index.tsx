@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/incompatible-library */
 import {
   ArrowRightOutlined,
   CloseOutlined,
@@ -20,13 +19,19 @@ import BadgeCount from "@/shared/components/Badge";
 import CustomPopover from "@/shared/components/Popover";
 import { Input } from "../../shared/components/Input";
 import { Label } from "../../shared/components/Text";
-import type { ILoginRequest, ISignUpRequest } from "@/types/auth";
+import type {
+  ILoginRequest,
+  ILoginResponse,
+  ISignUpRequest,
+} from "@/types/auth";
 import { NAV_HEADER } from "@/constants";
 import { useNavigate } from "@tanstack/react-router";
-import { useLogin, useSignUp } from "@/hooks/auth";
+import { useLogin, useLogout, useSignUp } from "@/hooks/auth";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import { clearError } from "@/store/slices/auth";
+import { getErrorMessage } from "@/utils/utils";
+import { useGetUser } from "@/hooks/user";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -34,6 +39,8 @@ const Header = () => {
   const authError = useSelector((state: RootState) => state.auth.error);
   const loginMutation = useLogin();
   const signUpMutation = useSignUp();
+  const logoutMutation = useLogout();
+  const getUserMutation = useGetUser();
   const [isCheckAdmit, setIsCheckAdmit] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"signin" | "signup" | null>(null);
@@ -43,6 +50,13 @@ const Header = () => {
 
   const isFormLoading = loginMutation.isPending || signUpMutation.isPending;
   const modalError = error ?? authError;
+
+  const user = useSelector((state: RootState) => state.user.user);
+  console.log("user: ", user);
+  const currentUser = Array.isArray(user) && user.length > 0 ? user[0] : null;
+  console.log("currentUser: ", currentUser);
+  const isAdmin = currentUser?.role === "ADMIN";
+
 
   // Sign In Form
   const {
@@ -104,9 +118,15 @@ const Header = () => {
     if (loginMutation.isPending) return;
     dispatch(clearError());
     loginMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (response: ILoginResponse) => {
+        getUserMutation.mutate(response.user._id);
         handleCloseModal();
         navigate({ to: "/" });
+      },
+      onError: (error) => {
+        setError(
+          getErrorMessage(error, "Đăng nhập thất bại. Vui lòng thử lại."),
+        );
       },
     });
   };
@@ -121,22 +141,106 @@ const Header = () => {
         handleCloseModal();
         navigate({ to: "/" });
       },
+      onError: (error) => {
+        setError(getErrorMessage(error, "Đăng ký thất bại. Vui lòng thử lại."));
+      },
     });
   };
 
-  const contentUser = (
-    <>
-      <div className="flex flex-col gap-2">
-        <div onClick={() => handleOpenModal("signin")}>
-          <Text text="Đăng nhập" className="text-black cursor-pointer hover:text-[#D39864]" />
-        </div>
+  const handleLogout = () => {
+    if (logoutMutation.isPending) return;
+    logoutMutation.mutate(
+      { refreshToken: currentUser?.refreshToken || "" },
+      {
+        onSuccess: () => {
+          setIsOpenPopup(false);
+          navigate({ to: "/" });
+        },
+      },
+    );
+  };
 
-        <div onClick={() => handleOpenModal("signup")}>
-          <Text text="Đăng ký" className="text-black cursor-pointer hover:text-[#D39864]" />
-        </div>
+  // Content khi CHƯA đăng nhập
+  const contentGuest = (
+    <div className="flex flex-col gap-2">
+      <div onClick={() => handleOpenModal("signin")}>
+        <Text
+          text="Đăng nhập"
+          className="text-black cursor-pointer hover:text-[#D39864]"
+        />
       </div>
-    </>
+      <div onClick={() => handleOpenModal("signup")}>
+        <Text
+          text="Đăng ký"
+          className="text-black cursor-pointer hover:text-[#D39864]"
+        />
+      </div>
+    </div>
   );
+
+  // Content khi ĐÃ đăng nhập
+  const contentLoggedIn = (
+    <div className="flex flex-col gap-2 min-w-[150px]">
+      {/* Thông tin user */}
+      <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+        <img
+          src={currentUser?.avatar || "/default-avatar.png"}
+          alt="avatar"
+          className="w-8 h-8 rounded-full object-cover"
+        />
+        <Text
+          text={currentUser?.username || "User"}
+          className="text-black font-medium"
+        />
+      </div>
+
+      {/* Menu items */}
+      <div
+        onClick={() => {
+          setIsOpenPopup(false);
+          navigate({ to: "/order" });
+        }}
+        className="cursor-pointer hover:text-[#D39864]"
+      >
+        <Text text="Đơn hàng" className="text-black hover:text-[#D39864]" />
+      </div>
+
+      {/* TODO: Thêm route /account khi có */}
+      <div
+        onClick={() => {
+          setIsOpenPopup(false);
+          // navigate({ to: "/account" });
+        }}
+        className="cursor-pointer hover:text-[#D39864]"
+      >
+        <Text text="Tài khoản" className="text-black hover:text-[#D39864]" />
+      </div>
+
+      {/* Chỉ hiển thị nếu là Admin */}
+      {isAdmin && (
+        <div
+          onClick={() => {
+            setIsOpenPopup(false);
+            navigate({ to: "/admin" });
+          }}
+          className="cursor-pointer hover:text-[#D39864]"
+        >
+          <Text text="Quản lý" className="text-black hover:text-[#D39864]" />
+        </div>
+      )}
+
+      {/* Đăng xuất */}
+      <div
+        onClick={handleLogout}
+        className="cursor-pointer pt-2 border-t border-gray-200"
+      >
+        <Text text="Đăng xuất" className="text-red-500 hover:text-red-600" />
+      </div>
+    </div>
+  );
+
+  // Chọn content dựa vào trạng thái đăng nhập
+  const contentUser = currentUser ? contentLoggedIn : contentGuest;
 
   return (
     <>
@@ -169,26 +273,33 @@ const Header = () => {
               placement="bottomRight"
             >
               <span onClick={() => setIsOpenPopup(!isOpenPopup)}>
-                <Icon
-                  size={"md"}
-                  component={UserOutlined}
-                  className="text-white "
-                />
+                {currentUser ? (
+                  <img
+                    src={currentUser.avatar || "/default-avatar.png"}
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full object-cover border-2 border-white cursor-pointer"
+                  />
+                ) : (
+                  <Icon
+                    size={"md"}
+                    component={UserOutlined}
+                    className="text-white"
+                  />
+                )}
               </span>
             </CustomPopover>
 
-
-            <BadgeCount
+            {currentUser && <BadgeCount
               count={10}
               children={
                 <Icon
                   size={"md"}
                   component={ShoppingCartOutlined}
                   className="text-white "
-                  onClick={() => { }}
+                  onClick={() => navigate({ to: "/cart" })}
                 />
               }
-            />
+            />}
           </div>
 
           {/* nav */}
@@ -197,11 +308,8 @@ const Header = () => {
               const isLastItem = index === NAV_HEADER.length - 1;
 
               return (
-                <ul>
-                  <li
-                    key={nav.id}
-                    className="transition-transform hover:scale-105 active:scale-95 duration-300"
-                  >
+                <ul key={nav.id}>
+                  <li className="transition-transform hover:scale-105 active:scale-95 duration-300">
                     {nav.tab === "p" && (
                       <a
                         href={nav.onclick}
@@ -237,29 +345,40 @@ const Header = () => {
             />
 
             <CustomPopover
+              open={isOpenPopup}
               content={contentUser}
               placement="bottomRight"
             >
-              <span>
-                <Icon
-                  size={"md"}
-                  component={UserOutlined}
-                  className="text-white "
-                />
+              <span onClick={() => setIsOpenPopup(!isOpenPopup)}>
+                {currentUser ? (
+                  <img
+                    src={currentUser.avatar || "/default-avatar.png"}
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full object-cover border-2 border-white cursor-pointer"
+                  />
+                ) : (
+                  <Icon
+                    size={"md"}
+                    component={UserOutlined}
+                    className="text-white"
+                  />
+                )}
               </span>
             </CustomPopover>
 
-            <BadgeCount
-              count={10}
-              children={
-                <Icon
-                  size={"md"}
-                  component={ShoppingCartOutlined}
-                  className="text-white "
-                  onClick={() => { }}
-                />
-              }
-            />
+            {
+              currentUser && <BadgeCount
+                count={10}
+                children={
+                  <Icon
+                    size={"md"}
+                    component={ShoppingCartOutlined}
+                    className="text-white "
+                    onClick={() => { }}
+                  />
+                }
+              />}
+
           </div>
         </header>
 
@@ -333,8 +452,14 @@ const Header = () => {
 
       {/* Sign In / Sign Up Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleCloseModal}>
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <Text
                 text={modalType === "signin" ? "Đăng nhập" : "Đăng ký"}
@@ -358,16 +483,6 @@ const Header = () => {
                 />
               </div>
 
-              {/* Error Message */}
-              {modalError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <Text
-                    text={modalError}
-                    className="text-red-600 text-sm"
-                  />
-                </div>
-              )}
-
               {modalType === "signin" ? (
                 <>
                   <div className="text-center mb-6">
@@ -377,13 +492,12 @@ const Header = () => {
                     />
                   </div>
 
-                  <form onSubmit={handleSignInSubmit(onSignInSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={handleSignInSubmit(onSignInSubmit)}
+                    className="space-y-4"
+                  >
                     <div>
-                      <Label
-                        text="Email"
-                        required
-                        className="block mb-2"
-                      />
+                      <Label text="Email" required className="block mb-2" />
                       <Input
                         type="email"
                         id="email"
@@ -408,11 +522,7 @@ const Header = () => {
                     </div>
 
                     <div>
-                      <Label
-                        text="Mật khẩu"
-                        required
-                        className="block mb-2"
-                      />
+                      <Label text="Mật khẩu" required className="block mb-2" />
                       <Input
                         type="password"
                         id="password"
@@ -460,12 +570,19 @@ const Header = () => {
                     </Button>
                   </form>
 
+                  {/* Error Message */}
+                  {modalError && (
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <Text
+                        text={modalError}
+                        className="text-red-600 text-sm"
+                      />
+                    </div>
+                  )}
+
                   <div className="my-6 flex items-center">
                     <div className="flex-1 border-t border-gray-300"></div>
-                    <Text
-                      text="hoặc"
-                      className="px-4 text-gray-500 text-sm"
-                    />
+                    <Text text="hoặc" className="px-4 text-gray-500 text-sm" />
                     <div className="flex-1 border-t border-gray-300"></div>
                   </div>
 
@@ -491,13 +608,13 @@ const Header = () => {
                     />
                   </div>
 
-                  <form onSubmit={handleSignUpSubmit(onSignUpSubmit)} noValidate className="space-y-4">
+                  <form
+                    onSubmit={handleSignUpSubmit(onSignUpSubmit)}
+                    noValidate
+                    className="space-y-4"
+                  >
                     <div>
-                      <Label
-                        text="Họ và tên"
-                        required
-                        className="block mb-2"
-                      />
+                      <Label text="Họ và tên" required className="block mb-2" />
                       <Input
                         type="text"
                         id="username"
@@ -520,13 +637,8 @@ const Header = () => {
                         />
                       )}
                     </div>
-
                     <div>
-                      <Label
-                        text="Email"
-                        required
-                        className="block mb-2"
-                      />
+                      <Label text="Email" required className="block mb-2" />
                       <Input
                         type="email"
                         id="email"
@@ -549,7 +661,6 @@ const Header = () => {
                         />
                       )}
                     </div>
-
                     <div>
                       <Label
                         text="Số điện thoại"
@@ -578,13 +689,8 @@ const Header = () => {
                         />
                       )}
                     </div>
-
                     <div>
-                      <Label
-                        text="Mật khẩu"
-                        required
-                        className="block mb-2"
-                      />
+                      <Label text="Mật khẩu" required className="block mb-2" />
                       <Input
                         type="password"
                         id="password"
@@ -607,7 +713,6 @@ const Header = () => {
                         />
                       )}
                     </div>
-
                     <div>
                       <Label
                         text="Xác nhận mật khẩu"
@@ -624,7 +729,8 @@ const Header = () => {
                         {...registerSignUp("confirmPassword", {
                           required: "Vui lòng nhập lại mật khẩu của bạn ",
                           validate: (value) =>
-                            value === watchPassword || "Mật khẩu xác nhận không khớp",
+                            value === watchPassword ||
+                            "Mật khẩu xác nhận không khớp",
                         })}
                       />
                       {signUpErrors.confirmPassword && (
@@ -634,7 +740,6 @@ const Header = () => {
                         />
                       )}
                     </div>
-
                     <div className="flex items-start">
                       <input
                         type="checkbox"
@@ -674,7 +779,16 @@ const Header = () => {
                         className="text-sm text-gray-600"
                       />
                     </div>
-
+                    {/* Error Message */}
+                    {modalError && (
+                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <Text
+                          text={modalError}
+                          className="text-red-600 text-sm"
+                        />
+                      </div>
+                    )}{" "}
+                    {/* Error Message */}
                     <Button
                       type="submit"
                       variant="primary"
@@ -688,10 +802,7 @@ const Header = () => {
 
                   <div className="my-6 flex items-center">
                     <div className="flex-1 border-t border-gray-300"></div>
-                    <Text
-                      text="hoặc"
-                      className="px-4 text-gray-500 text-sm"
-                    />
+                    <Text text="hoặc" className="px-4 text-gray-500 text-sm" />
                     <div className="flex-1 border-t border-gray-300"></div>
                   </div>
 

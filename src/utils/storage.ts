@@ -7,7 +7,7 @@
  */
 export const getAccessToken = (): string | null => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(import.meta.env.ACCESS_TOKEN_KEY);
+  return localStorage.getItem(import.meta.env.VITE_ACCESS_TOKEN_KEY);
 };
 
 /**
@@ -15,7 +15,7 @@ export const getAccessToken = (): string | null => {
  */
 export const setAccessToken = (token: string): void => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(import.meta.env.ACCESS_TOKEN_KEY, token);
+  localStorage.setItem(import.meta.env.VITE_ACCESS_TOKEN_KEY, token);
 };
 
 /**
@@ -23,7 +23,7 @@ export const setAccessToken = (token: string): void => {
  */
 export const removeAccessToken = (): void => {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(import.meta.env.ACCESS_TOKEN_KEY);
+  localStorage.removeItem(import.meta.env.VITE_ACCESS_TOKEN_KEY);
 };
 
 /**
@@ -31,7 +31,7 @@ export const removeAccessToken = (): void => {
  */
 export const getRefreshToken = (): string | null => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(import.meta.env.REFRESH_TOKEN_KEY);
+  return localStorage.getItem(import.meta.env.VITE_REFRESH_TOKEN_KEY);
 };
 
 /**
@@ -39,7 +39,7 @@ export const getRefreshToken = (): string | null => {
  */
 export const setRefreshToken = (token: string): void => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(import.meta.env.REFRESH_TOKEN_KEY, token);
+  localStorage.setItem(import.meta.env.VITE_REFRESH_TOKEN_KEY, token);
 };
 
 /**
@@ -47,7 +47,7 @@ export const setRefreshToken = (token: string): void => {
  */
 export const removeRefreshToken = (): void => {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(import.meta.env.REFRESH_TOKEN_KEY);
+  localStorage.removeItem(import.meta.env.VITE_REFRESH_TOKEN_KEY);
 };
 
 /**

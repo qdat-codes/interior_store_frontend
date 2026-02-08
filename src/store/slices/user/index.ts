@@ -14,7 +14,7 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         // set | clear user
-        setUser: (state, action: PayloadAction<IUser | null>) => {
+        setUser: (state, action: PayloadAction<IUser[] | null>) => {
             state.user = action.payload;
             state.isLoading = false;
             state.error = null;

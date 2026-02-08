@@ -6,8 +6,7 @@ export interface ILoginRequest {
 }
 
 export interface ILoginResponse {
-    token: string;
-    refreshToken: string;
+    accessToken: string;
     user: IUser;
 }
 
@@ -20,8 +19,8 @@ export interface ISignUpRequest {
 }
 
 export interface ISignUpResponse {
-    token: string;
-    refreshToken: string;
+    accessToken: string;
+    refreshToken?: string;
     user: IUser;
 }
 

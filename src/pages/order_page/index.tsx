@@ -154,8 +154,8 @@ const OrderPage = () => {
                     <Header />
                 </div>
                 <div className="md:px-3 lg:px-0 md:py-8 lg:py-12">
-                    <div className="md:mx-8 lg:mx-40">
-                        <div className="max-w-4xl mx-auto">
+                    <div className="md:mx-8 lg:px-[165px] lg:mx-0">
+                        <div className="mx-auto">
                             <Heading
                                 text="Đơn hàng của tôi"
                                 level={1}
